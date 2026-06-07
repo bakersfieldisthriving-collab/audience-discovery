@@ -1,0 +1,49 @@
+categories:
+  biohacking_newsletters:
+    label: Biohacking newsletters
+    seed_queries:
+      - "biohacking newsletter sponsor"
+      - "biohacking media kit"
+      - "biohacking YouTube channel business inquiries"
+      - "biohacking discord community sponsor"
+  longevity_communities:
+    label: Longevity communities
+    seed_queries:
+      - "longevity newsletter advertise"
+      - "longevity community sponsor"
+      - "longevity YouTube channel newsletter"
+      - "longevity discord community"
+  nootropics_audiences:
+    label: Nootropics audiences
+    seed_queries:
+      - "nootropics podcast sponsor"
+      - "nootropics newsletter advertise"
+  lab_research_supply_audiences:
+    label: Lab/research supply audiences
+    seed_queries:
+      - "lab supplies newsletter advertising"
+      - "biotech newsletter sponsor"
+  mens_health_adjacent_creators:
+    label: Men's health adjacent creators
+    seed_queries:
+      - "men's health newsletter sponsor"
+      - "testosterone optimization podcast sponsor"
+      - "men's health community sponsor"
+  fitness_science_communities:
+    label: Fitness science communities
+    seed_queries:
+      - "fitness science newsletter sponsor"
+      - "evidence based fitness podcast sponsor"
+      - "fitness science YouTube channel newsletter"
+  youtubers_with_email_lists:
+    label: YouTubers with email lists
+    seed_queries:
+      - "biohacking YouTube channel business inquiries"
+      - "longevity YouTube channel newsletter"
+      - "fitness science YouTube channel newsletter"
+  public_discord_private_community_owners:
+    label: Discord/private community owners from public landing pages only
+    seed_queries:
+      - "biohacking discord community sponsor"
+      - "longevity discord community"
+      - "men's health community sponsor"

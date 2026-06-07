@@ -1,0 +1,7 @@
+weights:
+  audience_relevance: 30
+  sponsorship_readiness: 20
+  commercial_intent: 15
+  trust_brand_safety: 15
+  contactability: 10
+  compliance_safety: 10

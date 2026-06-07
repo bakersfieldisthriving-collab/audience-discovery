@@ -1,0 +1,85 @@
+# Audience Discovery
+
+Audience Discovery is an MVP Python tool for finding and organizing public sponsorship-ready audience prospects for paid promotion research.
+
+The current implementation is intentionally conservative. It only works with public URLs and public sponsor, advertise, media-kit, business inquiry, contact page, or explicitly published email information. It does not auto-send outreach.
+
+## Compliance Limitations
+
+- Do not scrape private communities, private Discord servers, logins, paywalls, or hidden data.
+- Do not bypass platform restrictions.
+- Only collect public business, sponsor, advertise, media-kit, or contact information.
+- Respect `robots.txt` where page fetching is implemented.
+- Every exported lead includes source URLs.
+- Missing fields are set to `unknown`; the tool should not invent facts.
+- Leads require manual review before any outreach.
+- Review queue exports are a triage aid, not an approval to contact.
+
+## Setup
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+```
+
+## Environment Variables
+
+- `OPENAI_API_KEY`: optional. If missing, deterministic local classification and scoring are used.
+- `OPENAI_MODEL`: optional. Defaults to `gpt-4.1-mini` when OpenAI classification is used.
+- `YOUTUBE_API_KEY`: optional. The MVP includes a non-scraping YouTube provider skeleton; API search is not implemented yet.
+
+## Example Commands
+
+```powershell
+python -m audience_discovery.main --dry-run --limit 10
+python -m audience_discovery.main --category longevity_communities --limit 25
+python -m audience_discovery.main --export-only
+```
+
+By default, the CLI uses deterministic mock search results. Without `--dry-run`, it attempts to fetch public result URLs, checks `robots.txt`, rate limits requests, and extracts public page text, links, sponsor signals, and contact signals.
+
+## Outputs
+
+CSV exports are written to `outputs/`:
+
+- `leads_raw.csv`: all stored leads.
+- `leads_scored.csv`: all stored leads sorted by score.
+- `leads_review_queue.csv`: leads with `fit_score >= 60`, `compliance_risk != high`, and `sponsor_signal != none`.
+
+SQLite storage is written to `outputs/leads.sqlite` by default.
+
+## CSV Fields
+
+- `entity_name`
+- `category`
+- `platform`
+- `url`
+- `domain`
+- `audience_description`
+- `audience_size_estimate`
+- `sponsor_signal`
+- `contact_method`
+- `public_contact`
+- `fit_score`
+- `compliance_risk`
+- `fit_reason`
+- `outreach_angle`
+- `source_urls`
+- `status`
+- `created_at`
+- `updated_at`
+
+## What Is Mocked
+
+- `MockSearchProvider` returns deterministic public-looking mock results for dry runs and tests.
+- OpenAI classification falls back to deterministic local rules when `OPENAI_API_KEY` is missing or the OpenAI package is unavailable.
+- `YouTubeProvider` reads `YOUTUBE_API_KEY`, but real YouTube Data API search is not implemented in this MVP. It does not scrape YouTube HTML.
+
+## Tests
+
+```powershell
+pytest
+```
+
+All tests are designed to pass without external API keys or network access.
