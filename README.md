@@ -27,6 +27,7 @@ pip install -e ".[dev]"
 
 - `OPENAI_API_KEY`: optional. If missing, deterministic local classification and scoring are used.
 - `OPENAI_MODEL`: optional. Defaults to `gpt-4.1-mini` when OpenAI classification is used.
+- `SERPAPI_API_KEY`: required for real Google search through SerpAPI.
 - `YOUTUBE_API_KEY`: optional. The MVP includes a non-scraping YouTube provider skeleton; API search is not implemented yet.
 
 ## Example Commands
@@ -34,10 +35,13 @@ pip install -e ".[dev]"
 ```powershell
 python -m audience_discovery.main --dry-run --limit 10
 python -m audience_discovery.main --category longevity_communities --limit 25
+python -m audience_discovery.main --provider serpapi --category biohacking_newsletters --limit 100
 python -m audience_discovery.main --export-only
 ```
 
-By default, the CLI uses deterministic mock search results. Without `--dry-run`, it attempts to fetch public result URLs, checks `robots.txt`, rate limits requests, and extracts public page text, links, sponsor signals, and contact signals.
+By default, the CLI uses deterministic mock search results. With `--provider serpapi`, it searches Google through SerpAPI using the configured category seed queries, deduplicates results by URL and domain, then feeds results into the existing fetch, classify, score, SQLite, and CSV export workflow.
+
+Without `--dry-run`, the CLI attempts to fetch public result URLs, checks `robots.txt`, rate limits requests, and extracts public page text, links, sponsor signals, and contact signals.
 
 ## Outputs
 
@@ -75,6 +79,7 @@ SQLite storage is written to `outputs/leads.sqlite` by default.
 - `MockSearchProvider` returns deterministic public-looking mock results for dry runs and tests.
 - OpenAI classification falls back to deterministic local rules when `OPENAI_API_KEY` is missing or the OpenAI package is unavailable.
 - `YouTubeProvider` reads `YOUTUBE_API_KEY`, but real YouTube Data API search is not implemented in this MVP. It does not scrape YouTube HTML.
+- SerpAPI tests use mocked HTTP responses. Live SerpAPI search requires `SERPAPI_API_KEY`.
 
 ## Tests
 

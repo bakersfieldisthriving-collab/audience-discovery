@@ -9,6 +9,7 @@ from audience_discovery.crawl.fetcher import PageFetcher
 from audience_discovery.export.csv_exporter import CSVExporter
 from audience_discovery.models import PageContent, SearchResult
 from audience_discovery.search.mock_provider import MockSearchProvider
+from audience_discovery.search.serpapi_provider import SerpAPIProvider
 from audience_discovery.search.youtube_provider import YouTubeProvider
 from audience_discovery.storage.db import LeadStore
 
@@ -23,15 +24,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", default="outputs", help="CSV output directory.")
     parser.add_argument(
         "--provider",
-        choices=["mock", "youtube"],
+        choices=["mock", "serpapi", "youtube"],
         default="mock",
-        help="Search provider. YouTube is a non-scraping API skeleton in this MVP.",
+        help="Search provider. SerpAPI uses Google search; YouTube is a non-scraping API skeleton.",
     )
     return parser
 
 
 def _iter_search_results(provider, categories, limit: int):
     remaining = limit
+    seen_urls: set[str] = set()
+    seen_domains: set[str] = set()
     for category in categories:
         if remaining <= 0:
             break
@@ -39,6 +42,11 @@ def _iter_search_results(provider, categories, limit: int):
             if remaining <= 0:
                 break
             for result in provider.search(query, category.key, remaining):
+                normalized_url = result.url.rstrip("/")
+                if normalized_url in seen_urls or result.domain in seen_domains:
+                    continue
+                seen_urls.add(normalized_url)
+                seen_domains.add(result.domain)
                 yield result
                 remaining -= 1
                 if remaining <= 0:
@@ -67,7 +75,12 @@ def run(args: argparse.Namespace) -> dict[str, int]:
             else:
                 categories = list(config.categories.values())
 
-            provider = YouTubeProvider() if args.provider == "youtube" else MockSearchProvider()
+            if args.provider == "youtube":
+                provider = YouTubeProvider()
+            elif args.provider == "serpapi":
+                provider = SerpAPIProvider()
+            else:
+                provider = MockSearchProvider()
             fetcher = PageFetcher(rate_limit_seconds=1.0)
             classifier = LeadClassifier(config.scoring_weights)
 

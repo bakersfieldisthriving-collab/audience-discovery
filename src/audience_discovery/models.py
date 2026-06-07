@@ -39,7 +39,18 @@ class SearchResult:
     url: str
     snippet: str = UNKNOWN
     category: str = UNKNOWN
+    domain: str = UNKNOWN
     source: str = "search"
+
+    def __post_init__(self) -> None:
+        self.title = unknown_if_blank(self.title)
+        self.url = unknown_if_blank(self.url)
+        self.snippet = unknown_if_blank(self.snippet)
+        self.category = unknown_if_blank(self.category)
+        if self.domain == UNKNOWN and self.url != UNKNOWN:
+            self.domain = domain_from_url(self.url)
+        self.domain = normalize_domain(self.domain)
+        self.source = unknown_if_blank(self.source)
 
 
 @dataclass
