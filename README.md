@@ -49,7 +49,7 @@ CSV exports are written to `outputs/`:
 
 - `leads_raw.csv`: all stored leads.
 - `leads_scored.csv`: all stored leads sorted by score.
-- `leads_review_queue.csv`: leads with `fit_score >= 60`, `compliance_risk != high`, and `sponsor_signal != none`.
+- `leads_review_queue.csv`: leads with `fit_score >= 60`, `sponsorship_probability >= 50`, `compliance_risk != high`, `sponsor_signal != none`, and non-directory/non-article lead types. The review queue is sorted by `sponsorship_probability` descending.
 
 SQLite storage is written to `outputs/leads.sqlite` by default.
 
@@ -60,12 +60,15 @@ SQLite storage is written to `outputs/leads.sqlite` by default.
 - `platform`
 - `url`
 - `domain`
+- `audience_type`
 - `audience_description`
 - `audience_size_estimate`
+- `lead_type`
 - `sponsor_signal`
 - `contact_method`
 - `public_contact`
 - `fit_score`
+- `sponsorship_probability`
 - `compliance_risk`
 - `fit_reason`
 - `outreach_angle`
@@ -88,3 +91,31 @@ pytest
 ```
 
 All tests are designed to pass without external API keys or network access.
+
+## Category System
+
+Each lead has two category fields:
+
+Audience Type:
+
+- `Biohacking`
+- `Longevity`
+- `Men's Health`
+- `Fitness Science`
+- `Nootropics`
+- `Lab/Research`
+
+Lead Type:
+
+- `Newsletter`
+- `Creator`
+- `Podcast`
+- `Community`
+- `Media Kit`
+- `Sponsor Page`
+
+## Lead Quality
+
+The local scorer penalizes directories, listicles, aggregators, and generic articles. It boosts media kits, sponsor pages, newsletter operators, creator websites, and podcast sponsorship pages.
+
+The `sponsorship_probability` score is a 0-100 estimate based on public signals such as media-kit pages, advertise pages, sponsor pages, business inquiry pages, prior sponsor mentions, newsletter ownership, creator ownership, and contactability.

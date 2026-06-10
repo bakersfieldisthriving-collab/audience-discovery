@@ -10,6 +10,9 @@ def test_upsert_dedupes_by_domain(tmp_path) -> None:
                 entity_name="Example Prospect",
                 url="https://www.example.com/sponsor",
                 domain="www.example.com",
+                audience_type="Biohacking",
+                lead_type="Sponsor Page",
+                sponsorship_probability=80,
                 source_urls=["https://www.example.com/sponsor"],
             )
         )
@@ -29,5 +32,8 @@ def test_upsert_dedupes_by_domain(tmp_path) -> None:
             "https://www.example.com/sponsor",
             "https://example.com/advertise",
         }
+        assert leads[0].audience_type == "Biohacking"
+        assert leads[0].lead_type == "Sponsor Page"
+        assert leads[0].sponsorship_probability == 80
     finally:
         store.close()

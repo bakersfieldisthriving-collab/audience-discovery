@@ -79,12 +79,15 @@ class Lead:
     platform: str = UNKNOWN
     url: str = UNKNOWN
     domain: str = UNKNOWN
+    audience_type: str = UNKNOWN
     audience_description: str = UNKNOWN
     audience_size_estimate: str = UNKNOWN
+    lead_type: str = UNKNOWN
     sponsor_signal: str = "none"
     contact_method: str = UNKNOWN
     public_contact: str = UNKNOWN
     fit_score: int = 0
+    sponsorship_probability: int = 0
     compliance_risk: str = UNKNOWN
     fit_reason: str = UNKNOWN
     outreach_angle: str = UNKNOWN
@@ -100,8 +103,10 @@ class Lead:
             "platform",
             "url",
             "domain",
+            "audience_type",
             "audience_description",
             "audience_size_estimate",
+            "lead_type",
             "sponsor_signal",
             "contact_method",
             "public_contact",
@@ -115,6 +120,7 @@ class Lead:
             self.domain = domain_from_url(self.url)
         self.domain = normalize_domain(self.domain)
         self.fit_score = max(0, min(100, int(self.fit_score or 0)))
+        self.sponsorship_probability = max(0, min(100, int(self.sponsorship_probability or 0)))
         self.source_urls = [url for url in self.source_urls if unknown_if_blank(url) != UNKNOWN]
         if not self.source_urls and self.url != UNKNOWN:
             self.source_urls = [self.url]
@@ -139,12 +145,15 @@ LEAD_FIELDS = [
     "platform",
     "url",
     "domain",
+    "audience_type",
     "audience_description",
     "audience_size_estimate",
+    "lead_type",
     "sponsor_signal",
     "contact_method",
     "public_contact",
     "fit_score",
+    "sponsorship_probability",
     "compliance_risk",
     "fit_reason",
     "outreach_angle",

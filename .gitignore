@@ -1,7 +1,10 @@
 .venv/
+.codex/
 .pytest_cache/
 __pycache__/
 *.py[cod]
 *.egg-info/
 outputs/*.sqlite
 outputs/*.db
+live-serpapi-output/
+tmp-*/

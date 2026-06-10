@@ -3,11 +3,18 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+from audience_discovery.ai.scoring import is_low_quality_surface
 from audience_discovery.models import LEAD_FIELDS, Lead
 
 
 def review_queue_filter(lead: Lead) -> bool:
-    return lead.fit_score >= 60 and lead.compliance_risk != "high" and lead.sponsor_signal != "none"
+    return (
+        lead.fit_score >= 60
+        and lead.sponsorship_probability >= 50
+        and lead.compliance_risk != "high"
+        and lead.sponsor_signal != "none"
+        and not is_low_quality_surface(lead)
+    )
 
 
 class CSVExporter:
@@ -17,9 +24,13 @@ class CSVExporter:
 
     def export_all(self, leads: list[Lead]) -> dict[str, int]:
         raw_count = self._write("leads_raw.csv", leads)
-        scored = sorted(leads, key=lambda lead: lead.fit_score, reverse=True)
+        scored = sorted(leads, key=lambda lead: (lead.fit_score, lead.sponsorship_probability), reverse=True)
         scored_count = self._write("leads_scored.csv", scored)
-        review = [lead for lead in scored if review_queue_filter(lead)]
+        review = sorted(
+            [lead for lead in scored if review_queue_filter(lead)],
+            key=lambda lead: (lead.sponsorship_probability, lead.fit_score),
+            reverse=True,
+        )
         review_count = self._write("leads_review_queue.csv", review)
         return {"raw": raw_count, "scored": scored_count, "review_queue": review_count}
 
